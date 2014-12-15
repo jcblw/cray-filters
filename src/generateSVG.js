@@ -1,12 +1,12 @@
-module.exports = function( filePath, bgImage ) {
+module.exports = function( bgImage, callback ) {
     var vsvg = require( 'vsvg' ),
         PerlinNoise = require( 'perlin-simplex' ),
         perlin = new PerlinNoise( ),
         Color = require( 'color' ),
         fs = require( 'fs' ),
-        nRows = 10,
+        nRows = 20,
         nCols = nRows,
-        size = 500,
+        size = 400,
         noiseDistance = 20,
         zNoiseDistance = 1000,
         colorDistance = 0.5,
@@ -63,7 +63,6 @@ module.exports = function( filePath, bgImage ) {
             red = rgbValue( perlin.noise3d( x, y, z + colorDistance ) );
             green = rgbValue( perlin.noise3d( x, y, z - colorDistance ) );
             blue = rgbValue( perlin.noise3d( x, y, z ) );
-            process.stdout.write( '\r[' + column + ', ' + row + ']' + red + ', ' + green + ', ' + blue );
 
             id = 'filter-'+ row + '-' + column;
 
@@ -118,7 +117,8 @@ module.exports = function( filePath, bgImage ) {
         }
     };
 
-    fs.writeFile( filePath, '<!doctype html>' + svg.toHTML(), function( ) {
-        console.log( 'done' );
-    } );
+    callback( null, '<!doctype html>' +
+        '<html><body><style>*{ margin: 0; padding: 0;}</style>' + 
+        svg.toHTML() +
+        '<script src="/screenshot.js"></script></body></html>'  );
 };

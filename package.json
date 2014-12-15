@@ -1,0 +1,32 @@
+{
+  "name": "vsvg-images",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "testling": {
+    "files": "test/*.js",
+    "browsers": [
+      "phantom/latest",
+      "chrome/latest",
+      "firefox/latest",
+    ]
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "browser-launcher": "^1.0.0",
+    "color": "^0.7.3",
+    "datauri": "^0.5.5",
+    "mozilla-runner": "^0.5.0",
+    "perlin-noise": "0.0.1",
+    "perlin-simplex": "0.0.2",
+    "request": "^2.51.0",
+    "screenshot": "^0.1.0",
+    "url-to-screenshot": "^0.6.0",
+    "vsvg": "^1.8.0",
+    "webshot": "^0.15.3"
+  }
+}
