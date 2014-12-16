@@ -10,35 +10,30 @@ var svg = document.getElementsByTagName( 'svg' )[ 0 ],
     img = new Image(),
     svg = new Blob([data], {type: 'image/svg+xml;charset=utf-8'}),
     url = DOMURL.createObjectURL(svg),
-    query = qs.parse( window.location.search ),
-    reader = new FileReader();
+    query = qs.parse( window.location.search )
 
 function ready() {
-    ctx.drawImage(img, 0, 0);
+    ctx.drawImage(img, 0, 0)
     xhr({
         method: "POST",
         body: canvas.toDataURL("image/png"),
-        uri: '/BOTDONEPROCESSING?guid=' +  query.guid 
+        uri: '/~DONE?guid=' +  query.guid 
     }, function( err ) {
-        console.log( 'success' );
+        console.log( 'success' )
     })
 }
 
 function fileReady( e ) {
-    img.src = e.target.result;
+    img.src = e.target.result
 }
 
 canvas.width = 400
 canvas.height = 400
-img.onload = ready;
+img.onload = ready
 img.onerror = function( err ){
-    console.error( err );
-};
-img.src = url;
-// reader.onload = fileReady;
-// reader.onerror = console.error.bind( console );
-
-// reader.readAsDataURL( svg );
+    console.error( err )
+}
+img.src = url
 },{"querystring":4,"xhr":5}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //

@@ -1,10 +1,53 @@
-module.exports = function( bgImage, callback ) {
+var request = require( 'request' ),
+    fs = require( 'fs' ),
+    datauri = require( 'datauri' );
+
+module.exports.render = function( content, callback ) {
+
+    getSVG( content, function( err, svg ) {
+        if ( err ) callback ( err )
+        callback( null, 
+        '<!doctype html>' +
+        '<html>' + 
+            '<meta charset="utf8" />' + 
+            '<style>*{ margin: 0; padding: 0;}</style>' + 
+            '<body>' + 
+                svg.toHTML() +
+                '<script src="/bundle.js"></script>' + 
+            '</body>' + 
+        '</html>' )
+    })
+
+};
+
+function getSVG( content, callback ) {
+    var file = 'tmp/' + content.guid + '.png'
+
+    // downloads photo
+    request( content.photo )
+        .on( 'error', callback )
+        .pipe( fs.createWriteStream( file ) )
+        .on( 'error', callback )
+        .on( 'close', function() {
+            generateURI( file, callback )
+        } );
+}
+
+function generateURI( file, callback ) {
+    datauri( file, function( err, content ) {
+        if ( err ) return res.end( err.message )
+        generateSVG( content, callback )              
+        fs.unlink( file )
+    } );
+}
+
+function generateSVG( bgImage, callback ) {
     var vsvg = require( 'vsvg' ),
         PerlinNoise = require( 'perlin-simplex' ),
         perlin = new PerlinNoise( ),
         Color = require( 'color' ),
         fs = require( 'fs' ),
-        nRows = 1,
+        nRows = 20,
         nCols = nRows,
         size = 400,
         noiseDistance = 20,
@@ -38,18 +81,18 @@ module.exports = function( bgImage, callback ) {
             width: size,
             height: size,
             fill: 'url(#bg-image)'
-        });
+        })
 
-    pattern.appendChild( image );
-    defs.appendChild( pattern );
-    svg.appendChild( defs );
-    svg.appendChild( bg );
+    pattern.appendChild( image )
+    defs.appendChild( pattern )
+    svg.appendChild( defs )
+    svg.appendChild( bg )
 
 
-    var row, column, rect, red, green, blue, color, id;
+    var row, column, rect, red, green, blue, color, id
 
     function rgbValue( n ) {
-        return 255 * ( n / 2 + 0.5 );
+        return 255 * ( n / 2 + 0.5 )
     }
 
     for ( column = 0; column < nCols; column++) {
@@ -58,19 +101,19 @@ module.exports = function( bgImage, callback ) {
 
             var x = row / noiseDistance,
                 y = column / noiseDistance,
-                z = ( row * column ) / zNoiseDistance;
+                z = ( row * column ) / zNoiseDistance
 
-            red = rgbValue( perlin.noise3d( x, y, z + colorDistance ) );
-            green = rgbValue( perlin.noise3d( x, y, z - colorDistance ) );
-            blue = rgbValue( perlin.noise3d( x, y, z ) );
+            red = rgbValue( perlin.noise3d( x, y, z + colorDistance ) )
+            green = rgbValue( perlin.noise3d( x, y, z - colorDistance ) )
+            blue = rgbValue( perlin.noise3d( x, y, z ) )
 
-            id = 'filter-'+ row + '-' + column;
+            id = 'filter-'+ row + '-' + column
 
             color = Color( {
                 r: 255 - red,
                 g: 255 - green,
                 b: 255 - blue
-            } );
+            } )
 
             var filter = vsvg.filter({
                     class: 'colorFlood',
@@ -104,21 +147,18 @@ module.exports = function( bgImage, callback ) {
                     height: ratio,
                     filter: 'url(#' + id + ')',
                     fill: 'url(#bg-image)'
-                });
+                })
 
-            filter.appendChild( feFlood );
-            filter.appendChild( feColorMatrix );
-            filter.appendChild( feMerge );
-            feMerge.appendChild( feMergeNode0 );
-            feMerge.appendChild( feMergeNode1 );
-            defs.appendChild( filter );
+            filter.appendChild( feFlood )
+            filter.appendChild( feColorMatrix )
+            filter.appendChild( feMerge )
+            feMerge.appendChild( feMergeNode0 )
+            feMerge.appendChild( feMergeNode1 )
+            defs.appendChild( filter )
 
-            svg.appendChild( rect );
+            svg.appendChild( rect )
         }
-    };
+    }
 
-    callback( null, '<!doctype html>' +
-        '<html><meta charset="utf8" /><body><style>*{ margin: 0; padding: 0;}</style>' + 
-        svg.toHTML() +
-        '<script src="/bundle.js"></script></body></html>'  );
-};
+    callback( null, svg )
+}

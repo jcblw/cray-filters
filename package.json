@@ -1,12 +1,12 @@
 {
-  "name": "vsvg-images",
+  "name": "vsvg-image-filter-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is a little project to show off the capabilities of vsvg",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify client/screenshot.js -o client/bundle.js"
+    "build": "browserify client/index.js -o client/bundle.js"
   },
   "testling": {
     "files": "test/*.js",
@@ -16,8 +16,8 @@
       "firefox/latest"
     ]
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Jacob Lowe",
+  "license": "MIT",
   "dependencies": {
     "browser-launcher": "^1.0.0",
     "browserify": "^7.0.1",
@@ -26,7 +26,7 @@
     "datauri": "^0.5.5",
     "guid": "0.0.12",
     "install": "^0.1.8",
-    "npm": "^2.1.12",
+    "merge": "^1.2.0",
     "perlin-simplex": "0.0.2",
     "request": "^2.51.0",
     "vsvg": "^1.8.0",
