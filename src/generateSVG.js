@@ -4,7 +4,7 @@ module.exports = function( bgImage, callback ) {
         perlin = new PerlinNoise( ),
         Color = require( 'color' ),
         fs = require( 'fs' ),
-        nRows = 20,
+        nRows = 1,
         nCols = nRows,
         size = 400,
         noiseDistance = 20,
@@ -118,7 +118,7 @@ module.exports = function( bgImage, callback ) {
     };
 
     callback( null, '<!doctype html>' +
-        '<html><body><style>*{ margin: 0; padding: 0;}</style>' + 
+        '<html><meta charset="utf8" /><body><style>*{ margin: 0; padding: 0;}</style>' + 
         svg.toHTML() +
-        '<script src="/screenshot.js"></script></body></html>'  );
+        '<script src="/bundle.js"></script></body></html>'  );
 };
