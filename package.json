@@ -25,10 +25,11 @@
     "data-uri-to-buffer": "0.0.3",
     "datauri": "^0.5.5",
     "guid": "0.0.12",
-    "install": "^0.1.8",
+    "image-to-data-uri": "0.0.1",
     "merge": "^1.2.0",
     "perlin-simplex": "0.0.2",
     "request": "^2.51.0",
+    "run-in-browser": "^0.2.0",
     "vsvg": "^1.8.0",
     "xhr": "^2.0.0"
   }

@@ -1,40 +1,26 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
 var svg = document.getElementsByTagName( 'svg' )[ 0 ],
-    canvas = document.createElement('canvas'),
-    ctx = canvas.getContext('2d'),
+    imageToDataURI = require( 'image-to-data-uri' ),
     xhr = require( 'xhr' ),
     qs = require( 'querystring' ),
     DOMURL = window.URL || window.webkitURL || window,
     data = svg.outerHTML,
-    img = new Image(),
     svg = new Blob([data], {type: 'image/svg+xml;charset=utf-8'}),
     url = DOMURL.createObjectURL(svg),
     query = qs.parse( window.location.search )
 
-function ready() {
-    ctx.drawImage(img, 0, 0)
+
+imageToDataURI( url, function( err, uri ) {
     xhr({
         method: "POST",
-        body: canvas.toDataURL("image/png"),
+        body: uri,
         uri: '/~DONE?guid=' +  query.guid 
     }, function( err ) {
         console.log( 'success' )
-    })
-}
-
-function fileReady( e ) {
-    img.src = e.target.result
-}
-
-canvas.width = 400
-canvas.height = 400
-img.onload = ready
-img.onerror = function( err ){
-    console.error( err )
-}
-img.src = url
-},{"querystring":4,"xhr":5}],2:[function(require,module,exports){
+    });
+})
+},{"image-to-data-uri":5,"querystring":4,"xhr":6}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -214,6 +200,48 @@ exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
 },{"./decode":2,"./encode":3}],5:[function(require,module,exports){
+// converts a URL of an image into a dataURI
+module.exports = function (url, mimeType, cb) {
+    // Create an empty canvas and image elements
+    var canvas = document.createElement('canvas'),
+        img = document.createElement('img');
+
+    if ( typeof mimeType === 'function' ) {
+        cb = mimeType;
+        mimeType = null;
+    }
+
+    mimeType = mimeType || 'image/png';
+
+    // allow for cross origin that has correct headers
+    img.crossOrigin = "Anonymous"; 
+
+    img.onload = function () {
+        var ctx = canvas.getContext('2d');
+        // match size of image
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // Copy the image contents to the canvas
+        ctx.drawImage(img, 0, 0);
+
+        // Get the data-URI formatted image
+        cb( null, canvas.toDataURL( mimeType ) );
+    };
+
+    img.onerror = function () {
+        cb(new Error('FailedToLoadImage'));
+    };
+
+    // canvas is not supported
+    if (!canvas.getContext) {
+        cb(new Error('CanvasIsNotSupported'));
+    } else {
+        img.src = url;
+    }
+};
+
+},{}],6:[function(require,module,exports){
 "use strict";
 var window = require("global/window")
 var once = require("once")
@@ -382,7 +410,7 @@ function createXHR(options, callback) {
 
 function noop() {}
 
-},{"global/window":6,"once":7,"parse-headers":11}],6:[function(require,module,exports){
+},{"global/window":7,"once":8,"parse-headers":12}],7:[function(require,module,exports){
 (function (global){
 if (typeof window !== "undefined") {
     module.exports = window;
@@ -395,7 +423,7 @@ if (typeof window !== "undefined") {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = once
 
 once.proto = once(function () {
@@ -416,7 +444,7 @@ function once (fn) {
   }
 }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var isFunction = require('is-function')
 
 module.exports = forEach
@@ -464,7 +492,7 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-},{"is-function":9}],9:[function(require,module,exports){
+},{"is-function":10}],10:[function(require,module,exports){
 module.exports = isFunction
 
 var toString = Object.prototype.toString
@@ -481,7 +509,7 @@ function isFunction (fn) {
       fn === window.prompt))
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -497,7 +525,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var trim = require('trim')
   , forEach = require('for-each')
   , isArray = function(arg) {
@@ -529,4 +557,4 @@ module.exports = function (headers) {
 
   return result
 }
-},{"for-each":8,"trim":10}]},{},[1]);
+},{"for-each":9,"trim":11}]},{},[1]);

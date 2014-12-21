@@ -1,5 +1,6 @@
 var paths = [],
     qs = require( 'querystring' )
+    
 module.exports = function( options ) {
 
     return function ( req, res ) {
