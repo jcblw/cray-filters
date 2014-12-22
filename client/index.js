@@ -3,9 +3,27 @@ var
 server = require( 'server' ),
 convert = require( './convert' )
 
-server.on( 'image:start', function ( options ) {
+function convertImage( content, session, ts ) {
+    return function( ) {
+        convert( content.getElementsByTagName( 'svg' )[ 0 ], function( err, uri ) {
 
+            server.emit( 'debug', 'image converted ' + session );
+            content.remove()
 
+            server.emit(  'image:done', {
+                session: session, 
+                error: err,
+                image: {
+                    contentType: 'image/png',
+                    timeSpent: +new Date() - ts,
+                    data: uri
+                } 
+            } )
+        } )        
+    }
+}   
+
+function onImageStart( options ) {
     server.emit( 'debug', 'image request received ' + options.session );
 
     var 
@@ -15,20 +33,7 @@ server.on( 'image:start', function ( options ) {
     content.innerHTML = options.image
     document.body.appendChild( content )
 
-    convert( content.getElementsByTagName( 'svg' )[ 0 ], function( err, uri ) {
+    setTimeout( convertImage( content, options.session, ts ), 0 );
+}
 
-        content.remove()
-
-        server.emit( 'debug', 'image converted ' + options.session );
-
-        server.emit(  'image:done', {
-            session: options.session, 
-            error: err,
-            image: {
-                contentType: 'image/png',
-                timeSpent: +new Date() - ts,
-                data: uri
-            } 
-        } );
-    } )
-} )
+server.on( 'image:start', onImageStart )

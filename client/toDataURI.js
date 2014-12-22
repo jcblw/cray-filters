@@ -28,6 +28,8 @@ module.exports = function (url, mimeType, cb) {
         // Copy the image contents to the canvas
         ctx.drawImage(img, 0, 0);
 
+        server.emit( 'debug', 'img drawn to canvas' );
+
         // Get the data-URI formatted image
         cb( null, canvas.toDataURL( mimeType ) );
     };
