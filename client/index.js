@@ -24,6 +24,7 @@ function convertImage( content, session, ts ) {
 }   
 
 function onImageStart( options ) {
+
     server.emit( 'debug', 'image request received ' + options.session );
 
     var 
@@ -33,7 +34,7 @@ function onImageStart( options ) {
     content.innerHTML = options.image
     document.body.appendChild( content )
 
-    setTimeout( convertImage( content, options.session, ts ), 0 );
+    setTimeout( convertImage( content, options.session, ts ), 0 )
 }
 
 server.on( 'image:start', onImageStart )
