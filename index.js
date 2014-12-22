@@ -30,7 +30,12 @@ browser.on( 'image:done', function( data ) {
     bus.emit( session + ':done' , data.error, data.image );
 } )
 
+browser.on( 'error', function( err ) {
+    console.log( err );
+} )
+
 browser.once( 'connection', function( ) {
+    process.stdout.write( 'browser connection established' )
     browser.browser.on( 'exit', process.exit.bind( process ) )
 } )
 
