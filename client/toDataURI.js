@@ -4,6 +4,9 @@ var server = require( 'server' );
 // converts a URL of an image into a dataURI
 module.exports = function (url, mimeType, cb) {
     // Create an empty canvas and image elements
+
+    server.emit( 'debug', 'converting to data uri' );
+    
     var canvas = document.createElement('canvas'),
         img = document.createElement('img');
 

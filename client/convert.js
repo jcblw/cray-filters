@@ -11,5 +11,7 @@ module.exports = function( svg, callback ) {
     blob = new Blob( [ data ], { type: 'image/svg+xml;charset=utf-8' } ),
     url = DOMURL.createObjectURL( blob )
 
+    server.emit( 'debug', 'image turned into blob' );
+
     imageToDataURI( url, callback )
 }

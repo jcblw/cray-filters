@@ -5,6 +5,9 @@ convert = require( './convert' )
 
 function convertImage( content, session, ts ) {
     return function( ) {
+
+        server.emit( 'debug', 'converting image' );
+
         convert( content.getElementsByTagName( 'svg' )[ 0 ], function( err, uri ) {
 
             server.emit( 'debug', 'image converted ' + session );
