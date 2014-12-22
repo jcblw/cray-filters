@@ -1,20 +1,29 @@
 
-var svg = document.getElementsByTagName( 'svg' )[ 0 ],
-    imageToDataURI = require( 'image-to-data-uri' ),
-    xhr = require( 'xhr' ),
-    qs = require( 'querystring' ),
-    DOMURL = window.URL || window.webkitURL || window,
-    data = svg.outerHTML,
-    svg = new Blob([data], {type: 'image/svg+xml;charset=utf-8'}),
-    url = DOMURL.createObjectURL(svg),
-    query = qs.parse( window.location.search )
+var 
+server = require( 'server' ),
+convert = require( './convert' )
 
-imageToDataURI( url, function( err, uri ) {
-    xhr({
-        method: "POST",
-        body: uri,
-        uri: '/~DONE?guid=' +  query.guid 
-    }, function( err ) {
-        console.log( 'success' )
-    });
-})
+server.on( 'image:start', function ( options ) {
+
+    var 
+    ts = +new Date()
+    content = document.createElement( 'div' )
+
+    content.innerHTML = options.image
+    document.body.appendChild( content )
+
+    convert( content.getElementsByTagName( 'svg' )[ 0 ], function( err, uri ) {
+
+        content.remove()
+
+        server.emit(  'image:done', {
+            session: options.session, 
+            error: err,
+            image: {
+                contentType: 'image/png',
+                timeSpent: +new Date() - ts,
+                data: uri
+            } 
+        } );
+    } )
+} )

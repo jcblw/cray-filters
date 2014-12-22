@@ -1,17 +1,37 @@
-var http = require( 'http' ),
-    requests = require( './src/request' ),
-    routes = require( './src/routes' ),
-    port = process.env.PORT || 3000,
-    options = {
-        port: process.env.PORT || 3000,
-        endpoint: process.env.HOOK || '/~PROCESS',
-        headless: true,
-        browser: 'chrome',
-        timeout: 7000
-    },
-    server = http.createServer( requests( options ) );
+var 
+http = require( 'http' ),
+RunInBrowser = require( 'run-in-browser' ),
+requests = require( './src/request' ),
+routes = require( './src/routes' ),
+bus = require( './src/bus' ),
+port = process.env.PORT || 3000,
+options = {
+    port: process.env.PORT || 3000,
+    timeout: 7000
+},
+server = http.createServer( requests( options ) ),
+browser = new RunInBrowser( {
+    port: 4000,
+    headless: true,
+    browser: 'chrome'
+} )
 
-requests.routes( routes( options ) );
+options.browser = browser
 
-server.listen( options.port );
+requests.routes( routes( options ) )
+server.listen( options.port )
 console.log( 'Server listening on port ' + options.port )
+
+browser.on( 'image:done', function( data ) {
+    
+    var session = data.session,
+        err = data.error
+
+    bus.emit( session + ':done' , data.error, data.image );
+} )
+
+browser.once( 'connection', function( ) {
+    browser.browser.on( 'exit', process.exit.bind( process ) )
+} )
+
+browser.require( './client' );

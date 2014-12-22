@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify client/index.js -o client/bundle.js"
+    "build": "browserify client/client.js -o client/bundle.js",
+    "preinstall": "make"
   },
   "testling": {
     "files": "test/*.js",
@@ -25,7 +26,7 @@
     "data-uri-to-buffer": "0.0.3",
     "datauri": "^0.5.5",
     "guid": "0.0.12",
-    "image-to-data-uri": "0.0.1",
+    "image-to-data-uri": "jcblw/image-to-data-uri.js",
     "merge": "^1.2.0",
     "perlin-simplex": "0.0.2",
     "request": "^2.51.0",
