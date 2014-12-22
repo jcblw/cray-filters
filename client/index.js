@@ -5,6 +5,9 @@ convert = require( './convert' )
 
 server.on( 'image:start', function ( options ) {
 
+
+    server.emit( 'log', 'image request received ' + options.session );
+
     var 
     ts = +new Date()
     content = document.createElement( 'div' )
