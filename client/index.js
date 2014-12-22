@@ -27,7 +27,7 @@ function onImageStart( options ) {
     server.emit( 'debug', 'image request received ' + options.session );
 
     var 
-    ts = +new Date()
+    ts = +new Date(),
     content = document.createElement( 'div' )
 
     content.innerHTML = options.image
