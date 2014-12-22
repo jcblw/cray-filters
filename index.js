@@ -12,7 +12,7 @@ options = {
 server = http.createServer( requests( options ) ),
 browser = new RunInBrowser( {
     port: 4000,
-    headless: false,
+    headless: true,
     browser: 'chrome'
 } )
 
