@@ -37,6 +37,10 @@ browser.on( 'error', function( err ) {
 browser.once( 'connection', function( ) {
     process.stdout.write( 'browser connection established \r\n' )
     browser.browser.on( 'exit', process.exit.bind( process ) )
+    browser.browser.on( 'error', function( err ) {
+        console.log( 'error', err.message )
+        process.exit();
+    } )
 } )
 
 if ( process.env.DEBUG ) {
