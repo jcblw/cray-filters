@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify client/client.js -o client/bundle.js",
-    "preinstall": "make"
+    "build": "browserify client/client.js -o client/bundle.js"
   },
   "testling": {
     "files": "test/*.js",
