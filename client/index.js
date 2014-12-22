@@ -26,6 +26,7 @@ function convertImage( content, session, ts ) {
 
             uri = null
             content = null // try to free up some memory
+            document.location.reload()
         } )        
 
         content.innerHTML = '' // clear content out
