@@ -1,6 +1,6 @@
 
 var 
-imageToDataURI = require( 'image-to-data-uri' ),
+imageToDataURI = require( './toDataURI' ),
 DOMURL = window.URL || window.webkitURL || window
 
 

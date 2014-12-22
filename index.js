@@ -34,9 +34,12 @@ browser.on( 'error', function( err ) {
     console.log( err );
 } )
 
-browser.on( 'log', function( ) {
-    console.log.apply( console, arguments );
-} )
+if ( process.env.DEBUG ) {
+    browser.on( 'debug', function( ) {
+        console.log.apply( console, arguments );
+    } )
+}
+
 
 browser.once( 'connection', function( ) {
     process.stdout.write( 'browser connection established \r\n' )

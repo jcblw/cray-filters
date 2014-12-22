@@ -6,7 +6,7 @@ convert = require( './convert' )
 server.on( 'image:start', function ( options ) {
 
 
-    server.emit( 'log', 'image request received ' + options.session );
+    server.emit( 'debug', 'image request received ' + options.session );
 
     var 
     ts = +new Date()
@@ -18,6 +18,8 @@ server.on( 'image:start', function ( options ) {
     convert( content.getElementsByTagName( 'svg' )[ 0 ], function( err, uri ) {
 
         content.remove()
+
+        server.emit( 'debug', 'image converted ' + options.session );
 
         server.emit(  'image:done', {
             session: options.session, 
