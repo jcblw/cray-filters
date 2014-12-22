@@ -38,7 +38,7 @@ function generateSVG( bgImage, callback ) {
     perlin = new PerlinNoise( ),
     Color = require( 'color' ),
     fs = require( 'fs' ),
-    nRows = 20,
+    nRows = 5,
     nCols = nRows,
     size = 400,
     noiseDistance = 20,
