@@ -35,6 +35,10 @@ module.exports = function (url, mimeType, cb) {
 
         // Get the data-URI formatted image
         cb( null, canvas.toDataURL( mimeType ) );
+
+        canvas = null
+        ctx = null
+        url = null // try to free up some memory
     };
 
     img.onerror = function ( err ) {

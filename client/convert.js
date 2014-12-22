@@ -14,4 +14,9 @@ module.exports = function( svg, callback ) {
     server.emit( 'debug', 'image turned into blob' );
 
     imageToDataURI( url, callback )
+
+    svg = null
+    data = null
+    blob = null
+    url = null // try to free up some memory
 }

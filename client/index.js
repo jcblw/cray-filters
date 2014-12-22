@@ -13,6 +13,7 @@ function convertImage( content, session, ts ) {
             server.emit( 'debug', 'image converted ' + session );
             content.remove()
 
+
             server.emit(  'image:done', {
                 session: session, 
                 error: err,
@@ -22,7 +23,12 @@ function convertImage( content, session, ts ) {
                     data: uri
                 } 
             } )
+
+            uri = null
+            content = null // try to free up some memory
         } )        
+
+        content.innerHTML = '' // clear content out
     }
 }   
 
@@ -38,6 +44,8 @@ function onImageStart( options ) {
     document.body.appendChild( content )
 
     setTimeout( convertImage( content, options.session, ts ), 0 )
+
+    options = null // try to free up some memory
 }
 
 server.on( 'image:start', onImageStart )
