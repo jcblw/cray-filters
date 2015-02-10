@@ -1,4 +1,4 @@
-var 
+var
 request = require( 'request' ),
 fs = require( 'fs' ),
 datauri = require( 'datauri' )
@@ -6,12 +6,14 @@ datauri = require( 'datauri' )
 module.exports.render = function( content, callback ) {
     getSVG( content, function( err, svg ) {
         if ( err ) callback ( err )
-        callback( null, svg ? svg.toHTML() : null )
+        //console.log( svg.toHTML() );
+        callback( null, svg ? svg.toHTML() : null );
+        //fs.writeFileSync( __dirname + '/../tmp/sample.svg', svg.toHTML() );
     })
 }
 
 function getSVG( content, callback ) {
-    var file = 'tmp/' + content.session + '.png'
+    var file = 'tmp/' + content.session + '.jpg'
 
     // downloads photo
     request( content.photo )
@@ -19,20 +21,119 @@ function getSVG( content, callback ) {
         .pipe( fs.createWriteStream( file ) )
         .on( 'error', callback )
         .on( 'close', function() {
-            generateURI( file, callback )
+            
+            generateURI( file, function( err, data ) {
+                if ( err ) return callback( err );
+                hexFilter( data, callback )
+                //multicolorFilter( data, callback )
+            } )
+
+            
         } )
 }
 
 function generateURI( file, callback ) {
     datauri( file, function( err, content ) {
-        if ( err ) return res.end( err.message )
-        generateSVG( content, callback )              
+        if ( err ) return callback( err )
+        callback( null, content )
         fs.unlink( file )
     } )
 }
 
-function generateSVG( bgImage, callback ) {
-    var 
+function hexFilter( bgImage, callback ) {
+    var
+    vsvg = require( 'vsvg' ),
+    paths = require( 'vsvg-paths' ),
+    size = 400,
+    svg = vsvg.svg,
+    path = vsvg.path,
+    defs = vsvg.defs,
+    pattern = vsvg.pattern,
+    image = vsvg.image,
+    rect = vsvg.rect,
+    filter = vsvg.filter,
+    feMerge = vsvg.feMerge,
+    feMergeNode = vsvg.feMergeNode,
+    feFlood = vsvg.feFlood,
+    feColorMatrix = vsvg.feColorMatrix,
+    clipPath = vsvg.clipPath,
+    hexPath = [
+        // { x: 0, y: 200 },
+        // { x: 100, y: 25 },
+        // { x: 300, y: 25 },
+        // { x: 400, y: 200 },
+        // { x: 300, y: 375 },
+        // { x: 100, y: 375 },
+        // {}
+        { x: 20, y: 200 },
+        { x: 115, y: 45 },
+        { x: 285, y: 45 },
+        { x: 380, y: 200 },
+        { x: 285, y: 355 },
+        { x: 115, y: 355 },
+        { x: 20, y: 200 },
+        {}
+    ],
+    insideHexPath = [
+        { x: 40, y: 200 },// inside hex
+        { x: 125, y: 65 },
+        { x: 275, y: 65 },
+        { x: 360, y: 200 },
+        { x: 275, y: 335 },
+        { x: 125, y: 335 },
+        { x: 40, y: 200 },
+        {}
+    ];
+    callback( null, (
+        svg( { xmlns: 'http://www.w3.org/2000/svg', version: '1.1', width: size, height: size, 'shape-rendering': 'crispEdges', 'xmlns:xlink': 'http://www.w3.org/1999/xlink' },
+            defs( {},
+                pattern( { id: 'bg-image', patternUnits: 'userSpaceOnUse', width: '100%', height: '100%' },
+                    image( { 'xlink:href': bgImage, width: '100%', height: '100%', x: 0, y: 0 } )
+                ),
+                clipPath( { id: 'hex-clip' },
+                    path( { d: paths.encode( hexPath ) } )
+                ),
+                clipPath( { id: 'inside-hex-clip' },
+                    path( { d: paths.encode( insideHexPath ) } )
+                ),
+                filter( { className: 'colorFlood', id: 'hex-filter', x: '0%', y: '0%', width: '100%', height: '100%' },
+                    feFlood( { 'flood-color': 'black', result: 'A' } ),
+                    feColorMatrix( { type: 'matrix', in: 'SourceGraphic', result: 'B', values: '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 1 1 0 0' } ),
+                    feMerge( {},
+                        feMergeNode( { in: 'A' } ),
+                        feMergeNode( { in: 'B' } )
+                    )
+                ),
+                filter( { className: 'colorFlood', id: 'hex-filter2', x: '0%', y: '0%', width: '100%', height: '100%' },
+                    feFlood( { 'flood-color': '#9ea6ab', result: 'A' } ),
+                    feColorMatrix( { type: 'matrix', in: 'SourceGraphic', result: 'B', values: '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 1 1 0 0' } ),
+                    feMerge( {},
+                        feMergeNode( { in: 'A' } ),
+                        feMergeNode( { in: 'B' } )
+                    )
+                ),
+                filter( { className: 'colorFlood', id: 'hex-filter3', x: '0%', y: '0%', width: '100%', height: '100%' },
+                    feFlood( { 'flood-color': 'black', result: 'A' } ),
+                    feColorMatrix( { type: 'matrix', in: 'SourceGraphic', result: 'B', values: '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 1 1 0 0' } ),
+                    feMerge( {},
+                        feMergeNode( { in: 'A' } ),
+                        feMergeNode( { in: 'B' } )
+                    )
+                )
+            ),
+            rect( { width: '100%', height: '100%', x: 0, y: 0, fill: 'url(#bg-image)', filter: 'url(#hex-filter)' } ),
+            rect( { width: '100%', height: '100%', x: 0, y: 0, fill: 'url(#bg-image)', filter: 'url(#hex-filter2)', style: { 
+                'clip-path': 'url(#hex-clip)' 
+            } } ),
+            rect( { width: '100%', height: '100%', x: 0, y: 0, fill: 'url(#bg-image)' , filter: 'url(#hex-filter3)', style: { 
+                'clip-path': 'url(#inside-hex-clip)' 
+            } } )
+        )
+    ) )
+}
+
+function multicolorFilter( bgImage, callback ) {
+    var
     vsvg = require( 'vsvg' ),
     PerlinNoise = require( 'perlin-simplex' ),
     perlin = new PerlinNoise( ),
@@ -90,7 +191,7 @@ function generateSVG( bgImage, callback ) {
 
         for( row = 0; row < nRows; row ++ ) {
 
-            var 
+            var
             x = row / noiseDistance,
             y = column / noiseDistance,
             z = ( row * column ) / zNoiseDistance
@@ -107,7 +208,7 @@ function generateSVG( bgImage, callback ) {
                 b: 255 - blue
             } )
 
-            var 
+            var
             filter = vsvg.filter({
                 class: 'colorFlood',
                 x: '0%',

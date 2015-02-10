@@ -30,7 +30,8 @@
     "perlin-simplex": "0.0.2",
     "request": "^2.51.0",
     "run-in-browser": "^0.2.0",
-    "vsvg": "^1.8.0",
+    "vsvg": "^1.9.0",
+    "vsvg-paths": "^0.2.0",
     "xhr": "^2.0.0"
   }
 }
