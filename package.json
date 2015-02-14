@@ -27,6 +27,7 @@
     "guid": "0.0.12",
     "image-to-data-uri": "jcblw/image-to-data-uri.js",
     "merge": "^1.2.0",
+    "minimist": "^1.1.0",
     "perlin-simplex": "0.0.2",
     "request": "^2.51.0",
     "run-in-browser": "^0.2.0",

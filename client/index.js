@@ -50,3 +50,4 @@ function onImageStart( options ) {
 }
 
 server.on( 'image:start', onImageStart )
+server.emit( 'ready' );

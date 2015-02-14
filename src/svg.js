@@ -4,12 +4,23 @@ fs = require( 'fs' ),
 datauri = require( 'datauri' )
 
 module.exports.render = function( content, callback ) {
-    getSVG( content, function( err, svg ) {
+
+    function handle( err, svg ) {
         if ( err ) callback ( err )
         //console.log( svg.toHTML() );
-        callback( null, svg ? svg.toHTML() : null );
-        //fs.writeFileSync( __dirname + '/../tmp/sample.svg', svg.toHTML() );
-    })
+        callback( null, svg ? svg.toHTML() : null )        
+    }
+
+
+    if( content.local ) {
+        generateURI( content.local, function( err, data ) {
+            if ( err ) return callback( err )
+            //hexFilter( data, callback )
+            multicolorFilter( data, handle )
+        } )
+        return
+    }
+    getSVG( content, handle )
 }
 
 function getSVG( content, callback ) {
@@ -24,19 +35,21 @@ function getSVG( content, callback ) {
             
             generateURI( file, function( err, data ) {
                 if ( err ) return callback( err );
-                hexFilter( data, callback )
-                //multicolorFilter( data, callback )
-            } )
+                //hexFilter( data, callback )
+                multicolorFilter( data, callback )
+            }, true )
 
             
         } )
 }
 
-function generateURI( file, callback ) {
+function generateURI( file, callback, unlink ) {
     datauri( file, function( err, content ) {
         if ( err ) return callback( err )
         callback( null, content )
-        fs.unlink( file )
+        if( unlink ) {
+            fs.unlink( file )
+        }
     } )
 }
 

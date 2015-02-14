@@ -1,0 +1,121 @@
+var 
+http = require( 'http' ),
+RunInBrowser = require( 'run-in-browser' ),
+photo = require( './src/photo' ),
+bus = require( './src/bus' ),
+path = require( 'path' ),
+fs = require( 'fs' ),
+argv = require( 'minimist' )( process.argv.slice(2) ),
+browser = new RunInBrowser( {
+    port: 4000,
+    headless: true,
+    browser: 'chrome'
+} );
+
+browser.on( 'image:done', function( data ) {
+    
+    var session = data.session,
+        err = data.error
+    bus.emit( session + ':done' , data.error, data.image )
+} )
+
+browser.on( 'error', function( err ) {
+    console.log( err )
+    process.exit( 1 )
+} )
+
+browser.once( 'connection', function( ) {
+    browser.browser.on( 'exit', process.exit.bind( process ) )
+    browser.browser.on( 'error', function( err ) {
+        console.error( err )
+        process.exit( 1 )
+    } )
+} )
+
+browser.once( 'ready', function( ) {
+        var file;
+    if ( argv.f || argv.file ) {
+        file = path.normalize( __dirname + '/' + argv.f || argv.file )
+        fs.exists( file, function( exist ) {
+            if ( !exist ) {
+                console.error( new Error( 'file ' + file + ' does not exsist ') )
+                process.exit( 1 )
+                return
+            }    
+            photo.make( { 
+                local: file, 
+                browser: browser,
+                session: 'bin'
+            }, function( err, resp ) { 
+                if ( err ) {
+                    console.error( err )
+                    process.exit( 1 )
+                    return
+                }   
+                outputFile( resp.image )
+            } )
+        } )
+        return
+    }
+
+    console.error( new Error( 'you need to specify a file to add filter on using [ -f --file ] options' ) )
+    process.exit( 1 )
+} )
+
+if ( process.env.DEBUG ) {
+    browser.on( 'debug', function( ) {
+        console.log.apply( console, arguments )
+    } )
+    browser.require( './client/debug' )
+    return
+}
+
+browser.require( './client' )
+
+function outputFile( output ) {
+    if ( argv.o || argv.output ) {
+        var outputFile = path.normalize( argv.o || argv.output ),
+            ws = fs.createWriteStream( outputFile )
+                .on( 'error', function( err ) {
+                    console.error( err )
+                    process.exit( 1 )
+                } )
+                .on( 'finish', function( ) {
+                    console.log( outputFile + ' created' )
+                    process.exit( 0 )
+                } )
+        ws.write( output )
+        ws.end( )
+        return;
+    }
+    process.stdout.write( output )
+    process.exit( 0 )
+}
+/*
+var file;
+if ( argv.f || argv.file ) {
+    file = path.normalize( __dirname + '/' + argv.f || argv.file )
+    fs.exists( file, function( exist ) {
+        if ( !exist ) {
+            console.error( new Error( 'file ' + file + ' does not exsist ') )
+            process.exit( 1 )
+            return
+        }    
+        photo.make( { 
+            local: file, 
+            browser: browser 
+        }, function( err, resp ) { 
+            if ( err ) {
+                console.error( err )
+                process.exit( 1 )
+                return
+            }   
+            outputFile( resp.image )
+        } )
+    } )
+    return
+}
+
+console.error( new Error( 'you need to specify a file to add filter on using [ -f --file ] options' ) )
+process.exit( 1 )
+*/
