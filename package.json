@@ -1,5 +1,5 @@
 {
-  "name": "vsvg-image-filter-generator",
+  "name": "cray-filters",
   "version": "1.0.0",
   "description": "This is a little project to show off the capabilities of vsvg",
   "main": "index.js",
@@ -8,13 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify client/client.js -o client/bundle.js"
   },
-  "testling": {
-    "files": "test/*.js",
-    "browsers": [
-      "phantom/latest",
-      "chrome/latest",
-      "firefox/latest"
-    ]
+  "bin": {
+    "cray-filters" : "bin/cray-filters"
   },
   "author": "Jacob Lowe",
   "license": "MIT",

@@ -15,8 +15,8 @@ module.exports.render = function( content, callback ) {
     if( content.local ) {
         generateURI( content.local, function( err, data ) {
             if ( err ) return callback( err )
-            //hexFilter( data, callback )
-            multicolorFilter( data, handle )
+            hexFilter( data, handle )
+            //multicolorFilter( data, handle )
         } )
         return
     }

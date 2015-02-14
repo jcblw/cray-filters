@@ -1,8 +1,10 @@
+#!/usr/bin/env node
+
 var 
 http = require( 'http' ),
 RunInBrowser = require( 'run-in-browser' ),
-photo = require( './src/photo' ),
-bus = require( './src/bus' ),
+photo = require( '../src/photo' ),
+bus = require( '../src/bus' ),
 path = require( 'path' ),
 fs = require( 'fs' ),
 argv = require( 'minimist' )( process.argv.slice(2) ),
@@ -91,31 +93,3 @@ function outputFile( output ) {
     process.stdout.write( output )
     process.exit( 0 )
 }
-/*
-var file;
-if ( argv.f || argv.file ) {
-    file = path.normalize( __dirname + '/' + argv.f || argv.file )
-    fs.exists( file, function( exist ) {
-        if ( !exist ) {
-            console.error( new Error( 'file ' + file + ' does not exsist ') )
-            process.exit( 1 )
-            return
-        }    
-        photo.make( { 
-            local: file, 
-            browser: browser 
-        }, function( err, resp ) { 
-            if ( err ) {
-                console.error( err )
-                process.exit( 1 )
-                return
-            }   
-            outputFile( resp.image )
-        } )
-    } )
-    return
-}
-
-console.error( new Error( 'you need to specify a file to add filter on using [ -f --file ] options' ) )
-process.exit( 1 )
-*/
