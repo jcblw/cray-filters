@@ -1,6 +1,6 @@
 {
   "name": "cray-filters",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is a little project to show off the capabilities of vsvg",
   "main": "index.js",
   "scripts": {
