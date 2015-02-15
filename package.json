@@ -9,7 +9,7 @@
     "build": "browserify client/client.js -o client/bundle.js"
   },
   "bin": {
-    "cray-filters" : "bin/cray-filters"
+    "cray-filters": "bin/cray-filters"
   },
   "author": "Jacob Lowe",
   "license": "MIT",
@@ -19,6 +19,7 @@
     "color": "^0.7.3",
     "data-uri-to-buffer": "0.0.3",
     "datauri": "^0.5.5",
+    "gm": "^1.17.0",
     "guid": "0.0.12",
     "image-to-data-uri": "jcblw/image-to-data-uri.js",
     "merge": "^1.2.0",

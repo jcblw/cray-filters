@@ -50,7 +50,9 @@ browser.once( 'ready', function( ) {
             photo.make( {
                 local: file,
                 browser: browser,
-                session: 'bin'
+                session: 'bin',
+                filter: argv.filter,
+                color: argv.color || argv.c
             }, function( err, resp ) {
                 if ( err ) {
                     console.error( err )
