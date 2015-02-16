@@ -52,7 +52,9 @@ browser.once( 'ready', function( ) {
                 browser: browser,
                 session: 'bin',
                 filter: argv.filter,
-                color: argv.color || argv.c
+                color: argv.color || argv.c,
+                width: argv.width || argv.w,
+                height: argv.height || argv.h
             }, function( err, resp ) {
                 if ( err ) {
                     console.error( err )

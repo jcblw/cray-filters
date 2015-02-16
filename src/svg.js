@@ -29,8 +29,8 @@ module.exports.render = function( content, callback ) {
                 generateURI( content.local, applyFilter( content, handle ) )
             } )
             return
-            generateURI( content.local, applyFilter( content, handle ) )
         }
+        generateURI( content.local, applyFilter( content, handle ) )
         return
     }
     getSVG( content, handle )
@@ -95,11 +95,14 @@ function generateURI( file, callback, unlink ) {
 }
 
 function hexFilter( content, callback ) {
+
     var
     vsvg = require( 'vsvg' ),
     paths = require( 'vsvg-paths' ),
     width = content.width || 400,
     height = content.height || 400,
+    size = content.width > content.height ? content.height : content.width,
+    color = content.color || 'papayawhip',
     svg = vsvg.svg,
     path = vsvg.path,
     defs = vsvg.defs,
@@ -112,26 +115,11 @@ function hexFilter( content, callback ) {
     feFlood = vsvg.feFlood,
     feColorMatrix = vsvg.feColorMatrix,
     clipPath = vsvg.clipPath,
-    hexPath = [
-        { x: 20, y: 200 },
-        { x: 115, y: 45 },
-        { x: 285, y: 45 },
-        { x: 380, y: 200 },
-        { x: 285, y: 355 },
-        { x: 115, y: 355 },
-        { x: 20, y: 200 },
-        {}
-    ],
-    insideHexPath = [
-        { x: 40, y: 200 },// inside hex
-        { x: 125, y: 65 },
-        { x: 275, y: 65 },
-        { x: 360, y: 200 },
-        { x: 275, y: 335 },
-        { x: 125, y: 335 },
-        { x: 40, y: 200 },
-        {}
-    ]
+    large = size / 2 - 20,
+    small = size / 3 - 20,
+    hexPath = hexafactory( large ),
+    insideHexPath = hexafactory( small )
+
     callback( null, (
         svg( { xmlns: 'http://www.w3.org/2000/svg', version: '1.1', width: width, height: height, 'shape-rendering': 'crispEdges', 'xmlns:xlink': 'http://www.w3.org/1999/xlink' },
             defs( {},
@@ -139,10 +127,10 @@ function hexFilter( content, callback ) {
                     image( { 'xlink:href': content.datauri, width: '100%', height: '100%', x: 0, y: 0 } )
                 ),
                 clipPath( { id: 'hex-clip' },
-                    path( { d: paths.encode( hexPath ) } )
+                    path( { d: paths.encode( hexPath.map( pointOffest( width / 2 - large, height / 2 - large ) ) ) } )
                 ),
                 clipPath( { id: 'inside-hex-clip' },
-                    path( { d: paths.encode( insideHexPath ) } )
+                    path( { d: paths.encode( insideHexPath.map( pointOffest( width / 2 - small, height / 2 - small ) ) ) } )
                 ),
                 filter( { className: 'colorFlood', id: 'hex-filter', x: '0%', y: '0%', width: '100%', height: '100%' },
                     feFlood( { 'flood-color': 'black', result: 'A' } ),
@@ -153,7 +141,7 @@ function hexFilter( content, callback ) {
                     )
                 ),
                 filter( { className: 'colorFlood', id: 'hex-filter2', x: '0%', y: '0%', width: '100%', height: '100%' },
-                    feFlood( { 'flood-color': '#9ea6ab', result: 'A' } ),
+                    feFlood( { 'flood-color': color, result: 'A' } ),
                     feColorMatrix( { type: 'matrix', in: 'SourceGraphic', result: 'B', values: '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 1 1 0 0' } ),
                     feMerge( {},
                         feMergeNode( { in: 'A' } ),
@@ -177,7 +165,32 @@ function hexFilter( content, callback ) {
                 'clip-path': 'url(#inside-hex-clip)' 
             } } )
         )
-    ) )
+    ) );
+
+    function pointOffest( x, y ) {
+        return function ( point ) {
+            if ( typeof point.x === 'number' ) {
+                return {
+                    x: point.x + x,
+                    y: point.y + y
+                }
+            }
+            return {}
+        }
+    }
+
+    function hexafactory( radius ) {
+        return [
+            { x: radius - radius, y: radius },
+            { x: ( radius  * 2 ) / 4, y: radius / 8 },
+            { x: ( radius * 2 ) - ( radius * 2 ) / 4, y: radius / 8 },
+            { x: radius * 2, y: radius },
+            { x: ( radius * 2 ) - ( radius * 2 ) / 4, y: ( radius * 2 ) - ( radius / 8 )  },
+            { x: ( radius * 2 ) / 4, y: ( radius * 2 ) - ( radius / 8 )  },
+            { x: radius - radius, y: radius },
+            {}
+        ]
+    }
 }
 
 function colorBurnFilter( content, callback ) {
