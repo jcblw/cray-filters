@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "browser-launcher": "^1.0.0",
-    "browserify": "^7.0.1",
-    "color": "^0.7.3",
-    "data-uri-to-buffer": "0.0.3",
-    "datauri": "^0.5.5",
+    "browserify": "^14.3.0",
+    "color": "^1.0.3",
+    "data-uri-to-buffer": "0.0.4",
+    "datauri": "^1.0.5",
     "gm": "^1.17.0",
     "guid": "0.0.12",
     "image-to-data-uri": "jcblw/image-to-data-uri.js",
@@ -28,7 +28,7 @@
     "request": "^2.51.0",
     "run-in-browser": "^0.2.0",
     "vsvg": "^1.9.0",
-    "vsvg-paths": "^0.2.0",
+    "vsvg-paths": "^1.0.0",
     "xhr": "^2.0.0"
   }
 }
